@@ -1,0 +1,90 @@
+package de.jonas.telepads;
+
+import java.sql.SQLException;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.java.JavaPlugin;
+import de.jonas.stuff.commandapi.CommandAPI;
+import de.jonas.stuff.commandapi.CommandAPIBukkitConfig;
+import de.jonas.telepads.commands.GiveBuildItem;
+import de.jonas.telepads.commands.GivePortableTeleportItem;
+import de.jonas.telepads.listener.OpenGui;
+import de.jonas.telepads.listener.PreventChangePad;
+import de.jonas.telepads.listener.UseTelepad;
+import net.milkbowl.vault.economy.Economy;
+
+public class Telepads extends JavaPlugin{
+    
+    private static Economy econ = null;
+    public static Telepads INSTANCE;
+    public DataBasePool basePool;
+    public Events events;
+
+    @Override
+    public void onLoad() {
+
+        INSTANCE = this;
+
+        basePool = new DataBasePool();
+        basePool.init();
+
+        try {
+            basePool.createTableTelepads();
+            basePool.createTableTelePermission();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        
+        events = new Events();
+
+        CommandAPI.onLoad(new CommandAPIBukkitConfig(this));
+        new GiveBuildItem();
+        new GivePortableTeleportItem();
+    }
+
+    @Override
+    public void onEnable() {
+
+        this.listener();
+
+        CommandAPI.onEnable();
+
+        setupEconomy();
+
+    }
+
+    @Override
+    public void onDisable() {
+
+        CommandAPI.onDisable();
+
+        basePool.shutdown();
+
+    }
+
+    public void listener() {
+        PluginManager pm = Bukkit.getPluginManager();
+
+        pm.registerEvents(new OpenGui(), this);
+        pm.registerEvents(new PreventChangePad(), this);
+        pm.registerEvents(new UseTelepad(), this);
+    }
+
+    private boolean setupEconomy() {
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        econ = rsp.getProvider();
+        return econ != null;
+    }
+
+    public static Economy getEconomy() {
+        return econ;
+    }
+
+}
