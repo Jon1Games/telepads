@@ -3,9 +3,15 @@ package de.jonas.telepads.listener;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Beacon;
+import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+
 import de.jonas.telepads.commands.GiveBuildItem;
 
 public class PreventChangePad implements Listener{
@@ -28,23 +34,87 @@ public class PreventChangePad implements Listener{
     }
 
     @EventHandler
-    public void onBlockExplosion() {
-
+    public void onBlockExplosion(BlockExplodeEvent e) {
+        e.blockList().removeIf(block -> {
+            if (
+                block.getType().equals(Material.DARK_PRISMARINE) &&
+                checkCrossSurroundingPadBeacon(block.getLocation())
+                ) {
+                    return true;
+            } else if (
+                block.getType().equals(Material.STRIPPED_WARPED_HYPHAE) &&
+                checkSurroundingPadBeacon(block.getLocation())
+                ) {
+                    return true;
+            } else if (
+                block.getType().equals(Material.BEACON) &&
+                block.getState() instanceof Beacon b &&
+                b.getPersistentDataContainer().has(GiveBuildItem.telepadNum)
+                ) {
+                    return true;
+            } else return false;
+        });
     }
 
     @EventHandler
-    public void onEntityExplosion() {
-
+    public void onEntityExplosion(EntityExplodeEvent e) {
+        e.blockList().removeIf(block -> {
+            if (
+                block.getType().equals(Material.DARK_PRISMARINE) &&
+                checkCrossSurroundingPadBeacon(block.getLocation())
+                ) {
+                    return true;
+            } else if (
+                block.getType().equals(Material.STRIPPED_WARPED_HYPHAE) &&
+                checkSurroundingPadBeacon(block.getLocation())
+                ) {
+                    return true;
+            } else if (
+                block.getType().equals(Material.BEACON) &&
+                block.getState() instanceof Beacon b &&
+                b.getPersistentDataContainer().has(GiveBuildItem.telepadNum)
+                ) {
+                    return true;
+            } else return false;
+        });
     }
 
     @EventHandler
-    public void onPistonExtetion() {
-
+    public void onPistonExtetion(BlockPistonExtendEvent e) {
+        for (Block block : e.getBlocks()) {
+            if (
+                block.getType().equals(Material.DARK_PRISMARINE) &&
+                checkCrossSurroundingPadBeacon(block.getLocation())
+                ) {
+                    e.setCancelled(true);
+                    return;
+            } else if (
+                block.getType().equals(Material.STRIPPED_WARPED_HYPHAE) &&
+                checkSurroundingPadBeacon(block.getLocation())
+                ) {
+                    e.setCancelled(true);
+                    return;
+            }
+        }
     }
 
     @EventHandler
-    public void onPistonRetraction() {
-
+    public void onPistonRetraction(BlockPistonRetractEvent e) {
+        for (Block block : e.getBlocks()) {
+            if (
+                block.getType().equals(Material.DARK_PRISMARINE) &&
+                checkCrossSurroundingPadBeacon(block.getLocation())
+                ) {
+                    e.setCancelled(true);
+                    return;
+            } else if (
+                block.getType().equals(Material.STRIPPED_WARPED_HYPHAE) &&
+                checkSurroundingPadBeacon(block.getLocation())
+                ) {
+                    e.setCancelled(true);
+                    return;
+            }
+        }
     }
 
     private boolean checkSurroundingPadBeacon(Location loc) {

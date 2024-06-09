@@ -1,6 +1,9 @@
 package de.jonas.telepads.listener;
 
+import com.destroystokyo.paper.ParticleBuilder;
+import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.block.Beacon;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,7 +15,7 @@ import de.jonas.telepads.Telepads;
 import de.jonas.telepads.commands.GiveBuildItem;
 import de.jonas.telepads.particle.ParticleRunner;
 import de.jonas.telepads.particle.effects.SpiralEffect;
-import de.jonas.telepads.particle.spawner.PortalParticle;
+import de.jonas.telepads.particle.spawner.BuilderParticle;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 public class UseTelepad implements Listener{
@@ -40,7 +43,20 @@ public class UseTelepad implements Listener{
             Telepads.getEconomy().withdrawPlayer(e.getPlayer(), 2d);
             e.getPlayer().sendMessage(mm.deserialize("Dir wurden <green>2 Coins</green> zum Teleport abgezogen."));
             e.getPlayer().teleport(l.add(0.5,1,0.5));
-            new ParticleRunner(Telepads.INSTANCE, l, new SpiralEffect(2, 1, 2, PortalParticle.EFFECT), 2, 10);
+            new ParticleRunner(
+                    Telepads.INSTANCE,
+                    l,
+                    new SpiralEffect(2,
+                            1,
+                            2,
+                            new BuilderParticle(
+                                    new ParticleBuilder(Particle.REDSTONE) // in newer versions Particle.DUST
+                                        .count(1)
+                                        .color(Color.PURPLE, 1f)
+                                        .source(e.getPlayer()))
+                    ),
+                    2,
+                    10);
         }
 
     }

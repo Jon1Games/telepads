@@ -212,7 +212,7 @@ public class TelepadGui implements InventoryHolder{
                     .whenPlaced("telepads:buildTelepad")
                     .build()
             );
-            Telepads.getEconomy().depositPlayer((OfflinePlayer) e.getWhoClicked(), 200);
+            if (gui.level == 2) Telepads.getEconomy().depositPlayer((OfflinePlayer) e.getWhoClicked(), 200);
             e.getWhoClicked().sendMessage(mm.deserialize("Dir wurden <green>200 Coins</green> gutgeschrieben."));
             e.getWhoClicked().sendMessage(mm.deserialize("<green>Du hast das Telepad erfolgreich augehoben.</green>"));
         } else {

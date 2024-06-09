@@ -28,7 +28,7 @@ repositories {
 
 dependencies {
     compileOnly "io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT"
-    compileOnly files("build/libs/stuff-3.1.jar")
+    compileOnly files("build/libs/stuff-3.2.jar")
     implementation "dev.jorel:commandapi-bukkit-shade:9.3.0"
     implementation('com.zaxxer:HikariCP:5.1.0')
     implementation('org.mariadb.jdbc:mariadb-java-client:3.3.2') {

@@ -2,15 +2,18 @@ package de.jonas.telepads.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Particle;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import com.destroystokyo.paper.ParticleBuilder;
 import de.jonas.stuff.Stuff;
 import de.jonas.stuff.commandapi.CommandAPICommand;
 import de.jonas.stuff.interfaced.ClickEvent;
@@ -20,7 +23,7 @@ import de.jonas.telepads.DataBasePool;
 import de.jonas.telepads.Telepads;
 import de.jonas.telepads.particle.ParticleRunner;
 import de.jonas.telepads.particle.effects.SpiralEffect;
-import de.jonas.telepads.particle.spawner.PortalParticle;
+import de.jonas.telepads.particle.spawner.BuilderParticle;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 public class GivePortableTeleportItem {
@@ -73,7 +76,20 @@ public class GivePortableTeleportItem {
         Telepads.getEconomy().withdrawPlayer((OfflinePlayer) e.getWhoClicked(), 2d);
         e.getWhoClicked().sendMessage("Dir wurden <green>2 WÄHRUNG</green> zum Teleport abgezogen.");
         e.getWhoClicked().teleport(l);
-        new ParticleRunner(Telepads.INSTANCE, l, new SpiralEffect(2, 1, 2, PortalParticle.EFFECT), 2, 10);
+        new ParticleRunner(
+                    Telepads.INSTANCE,
+                    l,
+                    new SpiralEffect(2,
+                            1,
+                            2,
+                            new BuilderParticle(
+                                    new ParticleBuilder(Particle.REDSTONE) // in newer versions Particle.DUST
+                                        .count(1)
+                                        .color(Color.PURPLE, 1f)
+                                        .source((Player) e.getWhoClicked()))
+                    ),
+                    2,
+                    10);
     }
 
 }
