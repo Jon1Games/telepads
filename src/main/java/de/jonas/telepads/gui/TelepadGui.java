@@ -62,12 +62,12 @@ public class TelepadGui implements InventoryHolder{
         List<Component> lore = new ArrayList<>();
         if (destination != null) {
             lore.add(mm.deserialize("<white>Name: " + destiName + "</white>").decoration(TextDecoration.ITALIC,false));
-            lore.add(mm.deserialize("<white>Wellt: " + destination.getWorld().getName() + "</white>").decoration(TextDecoration.ITALIC, false));
+            lore.add(mm.deserialize("<white>Welt: " + destination.getWorld().getName() + "</white>").decoration(TextDecoration.ITALIC, false));
             lore.add(mm.deserialize("<white>X: " + destination.getBlockX() + "</white>").decoration(TextDecoration.ITALIC, false));
             lore.add(mm.deserialize("<white>Y: " + destination.getBlockY() + "</white>").decoration(TextDecoration.ITALIC, false));
             lore.add(mm.deserialize("<white>Z: " + destination.getBlockZ() + "</white>").decoration(TextDecoration.ITALIC, false));
         } else {
-            lore.add(mm.deserialize("Füge den Zielort hinzu."));
+            lore.add(mm.deserialize("Setze das Ziel fest."));
         }
         
 
@@ -93,7 +93,7 @@ public class TelepadGui implements InventoryHolder{
             new ItemBuilder()
             .setMaterial(Material.NAME_TAG)
             .setName(name)
-            .addLoreLine("Klicke um den Namen zu ändern.")
+            .addLoreLine("Klicken Namen ändern.")
             .whenClicked("telepads:click_change_name")
             .build()
         );
@@ -118,7 +118,7 @@ public class TelepadGui implements InventoryHolder{
         telepadGui.setItem(12, 
             new ItemBuilder()
                 .setMaterial(Material.ENDER_EYE)
-                .setName("sichtbarkeit")
+                .setName("Sichtbarkeit")
                 .whenClicked("telepads:open_publish_gui")
                 .build()
         );
@@ -157,7 +157,7 @@ public class TelepadGui implements InventoryHolder{
         e.getWhoClicked().closeInventory();
         TelepadGui gui = (TelepadGui) e.getInventory().getHolder(false);
         new UseNextChatInput((Player) e.getWhoClicked())
-            .sendMessage("Schreibe den Neuen Namen für das Telepad in den Chat.<br>Schreibe \"exit\" zum abzubrechen.")
+            .sendMessage("Wie möchtest du dein Telepad nennen?.<br>Schreibe \"exit\" um den Vorgang abzubrechen.")
             .setChatEvent((player, message) -> {
                 if (message.equalsIgnoreCase("exit")) {
                     player.sendMessage("Abgebrochen");
@@ -167,10 +167,10 @@ public class TelepadGui implements InventoryHolder{
                 Pattern ptm = Pattern.compile("[a-zA-Z0-9_ ]{3,32}");
                 if(ptm.matcher(message).matches()) {
                     DataBasePool.setName(db, gui.id, message);
-                    player.sendMessage(mm.deserialize("Der name \"<green><name></green>\" wurde für dieses Telepad gesetzt.",
+                    player.sendMessage(mm.deserialize("Dein Telepad wurde \"<green><name></green>\" genannt.",
                     Placeholder.component("name", Component.text(message))));
                 } else {
-                    player.sendMessage(mm.deserialize("<red>Ungültiger Name.<br>Dein Name muss [a-zA-Z0-9_ ] folgen und muss zwischen 3 und 32 Zeichen lang sein.</red>"));
+                    player.sendMessage(mm.deserialize("<red>Dieser Name ist ungültig <br>Der Name darf nur die Zeichen [a-zA-Z0-9_ ] verwenden <br> und muss zwischen 3 und 32 Zeichen lang sein.</red>"));
                 }
             })
             .capture();
@@ -185,7 +185,7 @@ public class TelepadGui implements InventoryHolder{
         Location location = DataBasePool.getlocation(db, gui.id);
 		if (e.getWhoClicked().getUniqueId().equals(owner) || e.getWhoClicked().hasPermission("telepads.admin")) {
             if (e.getWhoClicked().getInventory().firstEmpty() == -1) {
-                e.getWhoClicked().sendMessage(mm.deserialize("<red>Du must Platz im Inventar haben um das Telepad auzuheben</red>"));
+                e.getWhoClicked().sendMessage(mm.deserialize("<red>Dein Inventar ist voll, bitte lerre es um das Telepad aufzusammeln</red>"));
                 return;
             }
             e.getWhoClicked().closeInventory();
@@ -216,7 +216,7 @@ public class TelepadGui implements InventoryHolder{
             e.getWhoClicked().sendMessage(mm.deserialize("Dir wurden <green>200 Coins</green> gutgeschrieben."));
             e.getWhoClicked().sendMessage(mm.deserialize("<green>Du hast das Telepad erfolgreich augehoben.</green>"));
         } else {
-            e.getWhoClicked().sendMessage(mm.deserialize("<red>Du must der Besitzer sein um das Telepad aufzuheben!</red>"));
+            e.getWhoClicked().sendMessage(mm.deserialize("<red>Du bist nicht der Besitzer dieses Telepads!</red>"));
         }
 	}
 
@@ -262,7 +262,7 @@ public class TelepadGui implements InventoryHolder{
             );
             player.sendMessage(mm.deserialize("Dein Telepad wurde aufgewertet."));
         } else if (p instanceof Player player) {
-            player.sendMessage(mm.deserialize("<red>Du hast nicht genögend Geld.</red>"));
+            player.sendMessage(mm.deserialize("<red>Du hast nicht genügend Geld.</red>"));
         }
     }
 

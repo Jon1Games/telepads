@@ -23,11 +23,11 @@ public class PublishGUI implements InventoryHolder{
         this.level = level;
         this.publish = DataBasePool.getPublic(db, id);
         if (level == 1) {
-            pl = "Dein Telepad muss Level 2 sein um es für alle Öffnedlich zu machen.";
+            pl = "Telepad Level 2 benötigt";
         } else if (publish) {
-            pl = "Dieses Telepad ist Öffendlich.";
+            pl = "Öffentlich";
         } else {
-            pl = "Dieses Telepad ist nicht Öffendlich";
+            pl = "Privat";
         }
 
         inv = Bukkit.createInventory(this, (9*5), Component.text(""));
@@ -46,7 +46,7 @@ public class PublishGUI implements InventoryHolder{
         inv.setItem(11, 
             new ItemBuilder()
                 .setMaterial(Material.ENDER_EYE)
-                .setName("Öffnetlichkeit")
+                .setName("Sichtbarkeit")
                 .addLoreLine(pl)
                 .whenClicked("telepads:publish_to_everyone")
                 .build()
@@ -55,7 +55,7 @@ public class PublishGUI implements InventoryHolder{
         inv.setItem(13,
             new ItemBuilder()
             .setMaterial(Material.PLAYER_HEAD)
-                .setName("Füge Spieler hinzu")
+                .setName("Spieler hinzufügen")
                 .whenClicked("telepads:add_permittet_player")
                 .build()
         );
@@ -64,7 +64,7 @@ public class PublishGUI implements InventoryHolder{
             new ItemBuilder()
                 .setMaterial(Material.PAPER)
                 .setName("Spieler Liste")
-                .addLoreLine("Füge einen Spieler zur vertauten Liste hinzu.")
+                .addLoreLine("Eine Liste mit allen Spielern")
                 .whenClicked("telepads:list_permittet_player")
                 .build()
         );
@@ -81,14 +81,14 @@ public class PublishGUI implements InventoryHolder{
 
     public void executePublishUpdate() {
         if (publish) {
-            pl = "Dieses Telepad ist Öffendlich.";
+            pl = "Öffentlich";
         } else {
-            pl = "Dieses Telepad ist nicht Öffendlich";
+            pl = "Privat";
         }
         inv.setItem(11, 
             new ItemBuilder()
                 .setMaterial(Material.ENDER_EYE)
-                .setName("Öffnetlichkeit")
+                .setName("Sichtbarkeit")
                 .addLoreLine(pl)
                 .whenClicked("telepads:publish_to_everyone")
                 .build()

@@ -29,7 +29,7 @@ public class OpenGui implements Listener {
         int id = b.getPersistentDataContainer().get(GiveBuildItem.telepadNum, PersistentDataType.INTEGER);
         if (!(p.hasPermission("telepads.admin") || DataBasePool.playerIsOwner(db, 
             id, p.getUniqueId()))) { 
-                p.sendMessage(mm.deserialize("<red>Du bist nicht der Eigentümer dieses Telepads!</red>"));
+                p.sendMessage(mm.deserialize("<red>Dier gehört dieses Telepad nicht!</red>"));
                 return;
             }
 

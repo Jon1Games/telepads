@@ -138,7 +138,7 @@ public class Events {
             e.setCancelled(true);
             e.getWhoClicked().closeInventory();
             new UseNextChatInput((Player) e.getWhoClicked())
-                .sendMessage("Schreibe den Nutzer den du hinzufügen willst in den Chat.<br>Schreibe \"exit\" zum abzubrechen.")
+                .sendMessage("Schreibe den Spielernamne den du hinzufügen willst in den Chat.<br>Schreibe \"exit\" zum abzubrechen.")
                 .setChatEvent((player, message) -> {
                     if (message.equalsIgnoreCase("exit")) {
                       player.sendMessage("Abgebrochen");

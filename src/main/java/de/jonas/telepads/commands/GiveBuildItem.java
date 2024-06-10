@@ -65,7 +65,7 @@ public class GiveBuildItem {
                 orientBlock(l5, Axis.X);
                 loc.getWorld().setType(l7, Material.STRIPPED_WARPED_HYPHAE);
                 orientBlock(l7, Axis.Z);
-                pv.getPlayer().sendMessage(mm.deserialize("<green>Dein Telepad wurde Erstellt.</green>"));
+                pv.getPlayer().sendMessage(mm.deserialize("<green>Dein Telepad wurde erstellt.</green>"));
         } else {
             pv.setCancelled(true);
         }

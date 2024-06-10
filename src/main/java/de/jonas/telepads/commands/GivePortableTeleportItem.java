@@ -68,13 +68,13 @@ public class GivePortableTeleportItem {
         e.setCancelled(true);
         e.getWhoClicked().closeInventory();
         if (Telepads.getEconomy().getBalance((OfflinePlayer) e.getWhoClicked()) <= 2d) {
-            e.getWhoClicked().sendMessage("<red>Du hast nicht genügen Geld um dich zu Teleportieren.</red>");
+            e.getWhoClicked().sendMessage("<red>Du hast nicht genügen Coins um dich zu Teleportieren.</red>");
             return;
         }
         int id = e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(teleID, PersistentDataType.INTEGER);
         Location l = DataBasePool.getlocation(db, id).add(0.5,1,0.5);
         Telepads.getEconomy().withdrawPlayer((OfflinePlayer) e.getWhoClicked(), 2d);
-        e.getWhoClicked().sendMessage("Dir wurden <green>2 WÄHRUNG</green> zum Teleport abgezogen.");
+        e.getWhoClicked().sendMessage("Dir wurden <green>2 Coins</green> zum Teleport abgezogen.");
         e.getWhoClicked().teleport(l);
         new ParticleRunner(
                     Telepads.INSTANCE,
