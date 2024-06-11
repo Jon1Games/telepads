@@ -38,7 +38,7 @@ public class Telepads extends JavaPlugin{
         
         events = new Events();
 
-        CommandAPI.onLoad(new CommandAPIBukkitConfig(this));
+        if (!CommandAPI.isLoaded()) CommandAPI.onLoad(new CommandAPIBukkitConfig(this));
         new GiveBuildItem();
         new GivePortableTeleportItem();
     }
