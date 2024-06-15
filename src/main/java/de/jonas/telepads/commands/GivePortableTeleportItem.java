@@ -2,6 +2,7 @@ package de.jonas.telepads.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,7 +14,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+
 import com.destroystokyo.paper.ParticleBuilder;
+
 import de.jonas.stuff.Stuff;
 import de.jonas.stuff.commandapi.CommandAPICommand;
 import de.jonas.stuff.interfaced.ClickEvent;
@@ -64,6 +67,7 @@ public class GivePortableTeleportItem {
     }
 
     private static void teleportI(InventoryClickEvent e) {
+        MiniMessage mm = MiniMessage.miniMessage();
         DataBasePool db = Telepads.INSTANCE.basePool;
         e.setCancelled(true);
         e.getWhoClicked().closeInventory();
@@ -74,7 +78,7 @@ public class GivePortableTeleportItem {
         int id = e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(teleID, PersistentDataType.INTEGER);
         Location l = DataBasePool.getlocation(db, id).add(0.5,1,0.5);
         Telepads.getEconomy().withdrawPlayer((OfflinePlayer) e.getWhoClicked(), 2d);
-        e.getWhoClicked().sendMessage("Dir wurden <green>2 Coins</green> zum Teleport abgezogen.");
+        e.getWhoClicked().sendMessage(mm.deserialize("Dir wurden <green>2 Coins</green> zum Teleport abgezogen."));
         e.getWhoClicked().teleport(l);
         new ParticleRunner(
                     Telepads.INSTANCE,
