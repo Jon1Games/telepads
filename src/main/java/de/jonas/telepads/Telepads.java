@@ -1,17 +1,19 @@
 package de.jonas.telepads;
 
 import java.sql.SQLException;
+
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import de.jonas.stuff.commandapi.CommandAPI;
-import de.jonas.stuff.commandapi.CommandAPIBukkitConfig;
+
 import de.jonas.telepads.commands.GiveBuildItem;
 import de.jonas.telepads.commands.GivePortableTeleportItem;
 import de.jonas.telepads.listener.OpenGui;
 import de.jonas.telepads.listener.PreventChangePad;
 import de.jonas.telepads.listener.UseTelepad;
+import dev.jorel.commandapi.CommandAPI;
+import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import net.milkbowl.vault.economy.Economy;
 
 public class Telepads extends JavaPlugin{

@@ -8,12 +8,13 @@ import org.bukkit.block.Beacon;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.persistence.PersistentDataType;
+
 import de.jonas.stuff.Stuff;
-import de.jonas.stuff.commandapi.CommandAPICommand;
 import de.jonas.stuff.interfaced.PlaceEvent;
 import de.jonas.stuff.utility.ItemBuilder;
 import de.jonas.telepads.DataBasePool;
 import de.jonas.telepads.Telepads;
+import dev.jorel.commandapi.CommandAPICommand;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 public class GiveBuildItem { 

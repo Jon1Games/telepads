@@ -1,6 +1,5 @@
 package de.jonas.telepads.listener;
 
-import com.destroystokyo.paper.ParticleBuilder;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -10,6 +9,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+
+import com.destroystokyo.paper.ParticleBuilder;
+
 import de.jonas.telepads.DataBasePool;
 import de.jonas.telepads.Telepads;
 import de.jonas.telepads.commands.GiveBuildItem;
@@ -50,7 +52,7 @@ public class UseTelepad implements Listener{
                             1,
                             2,
                             new BuilderParticle(
-                                    new ParticleBuilder(Particle.REDSTONE) // in newer versions Particle.DUST
+                                    new ParticleBuilder(Particle.DUST)
                                         .count(1)
                                         .color(Color.PURPLE, 1f)
                                         .source(e.getPlayer()))

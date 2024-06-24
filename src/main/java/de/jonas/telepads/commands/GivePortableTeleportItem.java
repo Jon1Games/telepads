@@ -18,7 +18,6 @@ import org.bukkit.persistence.PersistentDataType;
 import com.destroystokyo.paper.ParticleBuilder;
 
 import de.jonas.stuff.Stuff;
-import de.jonas.stuff.commandapi.CommandAPICommand;
 import de.jonas.stuff.interfaced.ClickEvent;
 import de.jonas.stuff.utility.ItemBuilder;
 import de.jonas.stuff.utility.PagenationInventory;
@@ -27,16 +26,14 @@ import de.jonas.telepads.Telepads;
 import de.jonas.telepads.particle.ParticleRunner;
 import de.jonas.telepads.particle.effects.SpiralEffect;
 import de.jonas.telepads.particle.spawner.BuilderParticle;
+import dev.jorel.commandapi.CommandAPICommand;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 public class GivePortableTeleportItem {
-
-    DataBasePool db = Telepads.INSTANCE.basePool;
-    MiniMessage mm = MiniMessage.miniMessage();
     
     private static final NamespacedKey teleID = new NamespacedKey("telepads", "id_for_portable_teleport");
 
-    private static ClickEvent teleport = GivePortableTeleportItem::teleportI;
+    private static final ClickEvent teleport = GivePortableTeleportItem::teleportI;
 
     public GivePortableTeleportItem() {
 
@@ -75,6 +72,7 @@ public class GivePortableTeleportItem {
             e.getWhoClicked().sendMessage("<red>Du hast nicht genügen Coins um dich zu Teleportieren.</red>");
             return;
         }
+        if (e.getCurrentItem() == null || e.getCurrentItem().getItemMeta() == null) return;
         int id = e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(teleID, PersistentDataType.INTEGER);
         Location l = DataBasePool.getlocation(db, id).add(0.5,1,0.5);
         Telepads.getEconomy().withdrawPlayer((OfflinePlayer) e.getWhoClicked(), 2d);
@@ -87,7 +85,7 @@ public class GivePortableTeleportItem {
                             1,
                             2,
                             new BuilderParticle(
-                                    new ParticleBuilder(Particle.REDSTONE) // in newer versions Particle.DUST
+                                    new ParticleBuilder(Particle.DUST)
                                         .count(1)
                                         .color(Color.PURPLE, 1f)
                                         .source((Player) e.getWhoClicked()))

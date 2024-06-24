@@ -157,9 +157,9 @@ public class TelepadGui implements InventoryHolder{
         e.getWhoClicked().closeInventory();
         TelepadGui gui = (TelepadGui) e.getInventory().getHolder(false);
         new UseNextChatInput((Player) e.getWhoClicked())
-            .sendMessage("Wie möchtest du dein Telepad nennen?.<br>Schreibe \"exit\" um den Vorgang abzubrechen.")
+            .sendMessage("Wie möchtest du dein Telepad nennen?.<br>Schreibe \"exit\" oder \"abbrechen\" um den Vorgang abzubrechen.")
             .setChatEvent((player, message) -> {
-                if (message.equalsIgnoreCase("exit")) {
+                if (message.equalsIgnoreCase("exit") || message.equalsIgnoreCase("abbrechen")) {
                     player.sendMessage("Abgebrochen");
                     return;
                 }
