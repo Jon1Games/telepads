@@ -17,9 +17,9 @@ public class DataBasePool {
         HikariConfig config = new HikariConfig();
         config.setPoolName("db-hikari");
         config.setDriverClassName("org.mariadb.jdbc.Driver");
-        config.setJdbcUrl("jdbc:mariadb://192.168.88.100:3306/telepads");
+        config.setJdbcUrl("jdbc:mariadb://IP/telepads");
         config.setUsername("telepads");
-        config.setPassword("qToHLzSzSCEYlvjPncLqKROdRIpdEiYc8Mx0Q2XmkGTo5oTUiimeFvOKxYTCXAjyvzQEz7jQSX4RcgD8f9XtN3XSmjHsWCxFprj1ouPPStV3D6dFgApb0SVhFkklEt6o");
+        config.setPassword("PASSWD");
         config.setMaximumPoolSize(10);
         config.setMinimumIdle(1);
         config.setMaxLifetime(0);
