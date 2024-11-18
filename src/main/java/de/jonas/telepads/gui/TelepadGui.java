@@ -229,6 +229,7 @@ public class TelepadGui implements InventoryHolder{
 	}
 
     private static void openDestinationGuiI(InventoryClickEvent e) {
+        MiniMessage mm = MiniMessage.miniMessage();
         if (e.getInventory().getHolder() instanceof TelepadGui tg) {
             e.setCancelled(true);
             DataBasePool db = Telepads.INSTANCE.basePool;
@@ -243,7 +244,7 @@ public class TelepadGui implements InventoryHolder{
                 } else {block = Material.getMaterial(blockID.toUpperCase());}
                 ItemStack item = new ItemBuilder()
                     .setMaterial(block)
-                    .setName(Component.text(name))
+                    .setName(mm.deserialize(name).decoration(TextDecoration.ITALIC, false))
                     .whenClicked("telepads:select_telepad_destination")
                     .build();
                 ItemMeta meta = item.getItemMeta();

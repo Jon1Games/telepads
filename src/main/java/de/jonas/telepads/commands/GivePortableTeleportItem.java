@@ -28,6 +28,7 @@ import de.jonas.telepads.particle.effects.SpiralEffect;
 import de.jonas.telepads.particle.spawner.BuilderParticle;
 import dev.jorel.commandapi.CommandAPICommand;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 public class GivePortableTeleportItem {
@@ -79,6 +80,7 @@ public class GivePortableTeleportItem {
     }
 
     public static List<ItemStack> getItems(Player player) {
+        MiniMessage mm = MiniMessage.miniMessage();
         DataBasePool db = Telepads.INSTANCE.basePool;
         List<Integer> pads = DataBasePool.getAllTelepadsIFPermissionAndLevel2PadFavorites(db, player.getUniqueId());
         List<Integer> padss = DataBasePool.getAllTelepadsIFPermissionAndLevel2PadNotFavorites(db, player.getUniqueId());
@@ -94,10 +96,10 @@ public class GivePortableTeleportItem {
                 String name = DataBasePool.getName(db, a);
                 String blockID = DataBasePool.getBlockID(db, a);
                 boolean isFavorite = DataBasePool.getPlayerFavorite(db, player.getUniqueId(), a);
-                String fav;
+                Component fav;
                 if (isFavorite) {
-                    fav = "Favorite";
-                } else {fav="";}
+                    fav = mm.deserialize("<yellow>Favorit</yellow>").decoration(TextDecoration.ITALIC, false);
+                } else {fav = mm.deserialize("");}
                 Material block;
                 if (blockID == null) {
                     block = Material.BEACON;
@@ -105,10 +107,13 @@ public class GivePortableTeleportItem {
 
                 ItemStack item = new ItemBuilder()
                     .setMaterial(block)
-                    .setName(Component.text(name))
+                    .setName(mm.deserialize(name).decoration(TextDecoration.ITALIC, false))
                     .whenLeftClicked("telepads:teleport_per_portable_gui")
                     .whenRightClicked("telepads:favorite_telepad")
+                    .addLoreLine(mm.deserialize("<white>Links Klick: Teleport</white>").decoration(TextDecoration.ITALIC, false))
+                    .addLoreLine(mm.deserialize("<white>Rechts Klick: Favorisieren</white>").decoration(TextDecoration.ITALIC, false))
                     .addLoreLine(fav)
+
                 .build();
                 ItemMeta meta = item.getItemMeta();
                 meta.getPersistentDataContainer().set(Events.teleID, PersistentDataType.INTEGER, a);

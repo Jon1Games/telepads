@@ -87,7 +87,7 @@ public class Events {
         int id = container.get(TelepadGui.desti, PersistentDataType.INTEGER);
     
         DataBasePool.setNewDestinationID(db, idsource, id);
-        Component name = Component.text(DataBasePool.getName(db, id));
+        Component name = mm.deserialize(DataBasePool.getName(db, id));
         e.getWhoClicked().sendMessage(mm.deserialize("Du hast \"<desti>\" erfolgreich als Ziel gesetzt.",
         Placeholder.component("desti", name)));
         Location l = DataBasePool.getlocation(db, idsource);
