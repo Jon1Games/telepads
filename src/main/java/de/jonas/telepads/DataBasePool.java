@@ -1,7 +1,16 @@
 package de.jonas.telepads;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,9 +26,9 @@ public class DataBasePool {
         HikariConfig config = new HikariConfig();
         config.setPoolName("db-hikari");
         config.setDriverClassName("org.mariadb.jdbc.Driver");
-        config.setJdbcUrl("jdbc:mariadb://IP/telepads");
-        config.setUsername("telepads");
-        config.setPassword("PASSWD");
+        config.setJdbcUrl(Telepads.INSTANCE.getConfig().getString("Database"));
+        config.setUsername(Telepads.INSTANCE.getConfig().getString("Username"));
+        config.setPassword(Telepads.INSTANCE.getConfig().getString("Password"));
         config.setMaximumPoolSize(10);
         config.setMinimumIdle(1);
         config.setMaxLifetime(0);
@@ -72,6 +81,7 @@ public class DataBasePool {
             "owner UUID NOT NULL," +
             "`level` TINYINT NOT NULL," +
             "destinationID INTEGER," +
+            "blockID INTEGER," +
             "public boolean NOT NULL)" +
             "ENGINE = InnoDB;";
 
@@ -82,6 +92,17 @@ public class DataBasePool {
     public void createTableTelePermission() throws SQLException {
         Connection con = getConnection();
         String sqlCreate = "CREATE TABLE IF NOT EXISTS telepermission (" +
+            "id INTEGER NOT NULL," +
+            "player UUID NOT NULL)" +
+            "ENGINE = InnoDB;";
+
+        Statement stmt = con.createStatement();
+        stmt.execute(sqlCreate);
+    }
+
+    public void createTableTeleFavorites() throws SQLException {
+        Connection con = getConnection();
+        String sqlCreate = "CREATE TABLE IF NOT EXISTS telefavorites (" +
             "id INTEGER NOT NULL," +
             "player UUID NOT NULL)" +
             "ENGINE = InnoDB;";
@@ -305,6 +326,52 @@ public class DataBasePool {
         }
     }
 
+    public static List<Integer> getAllTelepadsIFPermissionFavorites(DataBasePool pool, UUID playerUUID) {
+        String querry = "SELECT * FROM telepads WHERE (telepads.owner = ? OR telepads.public OR telepads.id IN (SELECT id FROM telepermission WHERE telepermission.player = ?) AND IN (SELECT id FROM telefavorites WHERE telefavorites.player = ?));";
+
+        try {
+            Connection con = pool.getConnection();
+            PreparedStatement sel = con.prepareStatement(querry);
+            sel.setObject(1, playerUUID);
+            sel.setObject(2, playerUUID);
+            sel.setObject(2, playerUUID);
+            ResultSet res = sel.executeQuery();
+            List<Integer> list = new ArrayList<>();
+            for (boolean a = res.first(); a; a = res.next() ) {
+                list.add(res.getInt("id"));
+            }
+            sel.close();
+            con.close();
+            return list;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static List<Integer> getAllTelepadsIFPermissionNotFavorites(DataBasePool pool, UUID playerUUID) {
+        String querry = "SELECT * FROM telepads WHERE (telepads.owner = ? OR telepads.public OR telepads.id IN (SELECT id FROM telepermission WHERE telepermission.player = ?) AND NOT IN (SELECT id FROM telefavorites WHERE telefavorites.player = ?));";
+
+        try {
+            Connection con = pool.getConnection();
+            PreparedStatement sel = con.prepareStatement(querry);
+            sel.setObject(1, playerUUID);
+            sel.setObject(2, playerUUID);
+            sel.setObject(2, playerUUID);
+            ResultSet res = sel.executeQuery();
+            List<Integer> list = new ArrayList<>();
+            for (boolean a = res.first(); a; a = res.next() ) {
+                list.add(res.getInt("id"));
+            }
+            sel.close();
+            con.close();
+            return list;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static List<Integer> getAllTelepadsIFPermissionAndLevel2Pad(DataBasePool pool, UUID playerUUID) {
         String querry = "SELECT * FROM telepads WHERE (telepads.owner = ? OR telepads.public OR telepads.id IN (SELECT id FROM telepermission WHERE telepermission.player = ?)) AND `level` = ?;";
 
@@ -314,6 +381,54 @@ public class DataBasePool {
             sel.setObject(1, playerUUID);
             sel.setObject(2, playerUUID);
             sel.setObject(3, 2);
+            ResultSet res = sel.executeQuery();
+            List<Integer> list = new ArrayList<>();
+            for (boolean a = res.first(); a; a = res.next() ) {
+                list.add(res.getInt("id"));
+            }
+            sel.close();
+            con.close();
+            return list;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static List<Integer> getAllTelepadsIFPermissionAndLevel2PadFavorites(DataBasePool pool, UUID playerUUID) {
+        String querry = "SELECT `telepads`.* FROM `telepads` WHERE (`telepads`.`owner` = ? OR `telepads`.`public` OR `telepads`.`id` IN (SELECT `telepermission`.`id` FROM `telepermission` WHERE `telepermission`.`player` = ?)) AND `telepads`.`level` = ? AND `telepads`.`id` IN (SELECT `telefavorites`.`id` FROM `telefavorites` WHERE `telefavorites`.`player` = ?);";
+
+        try {
+            Connection con = pool.getConnection();
+            PreparedStatement sel = con.prepareStatement(querry);
+            sel.setObject(1, playerUUID);
+            sel.setObject(2, playerUUID);
+            sel.setObject(3, 2);
+            sel.setObject(4, playerUUID);
+            ResultSet res = sel.executeQuery();
+            List<Integer> list = new ArrayList<>();
+            for (boolean a = res.first(); a; a = res.next() ) {
+                list.add(res.getInt("id"));
+            }
+            sel.close();
+            con.close();
+            return list;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static List<Integer> getAllTelepadsIFPermissionAndLevel2PadNotFavorites(DataBasePool pool, UUID playerUUID) {
+        String querry = "SELECT `telepads`.* FROM `telepads` WHERE (`telepads`.`owner` = ? OR `telepads`.`public` OR `telepads`.`id` IN (SELECT `telepermission`.`id` FROM `telepermission` WHERE `telepermission`.`player` = ?)) AND `telepads`.`level` = ? AND `telepads`.`id` NOT IN (SELECT `telefavorites`.`id` FROM `telefavorites` WHERE `telefavorites`.`player` = ?);";
+
+        try {
+            Connection con = pool.getConnection();
+            PreparedStatement sel = con.prepareStatement(querry);
+            sel.setObject(1, playerUUID);
+            sel.setObject(2, playerUUID);
+            sel.setObject(3, 2);
+            sel.setObject(4, playerUUID);
             ResultSet res = sel.executeQuery();
             List<Integer> list = new ArrayList<>();
             for (boolean a = res.first(); a; a = res.next() ) {
@@ -561,4 +676,54 @@ public class DataBasePool {
         }
     }
 
+    public static void addPlayerFavorites(DataBasePool pool, int telepad, UUID playerUUID) {
+        String querry = "INSERT INTO `telefavorites` (`id`, `player`) VALUES (?, ?);";
+        try {
+            Connection con = pool.getConnection();
+            PreparedStatement sel = con.prepareStatement(querry);
+            sel.setObject(1, telepad);
+            sel.setObject(2, playerUUID);
+            sel.executeQuery();
+            sel.close();
+            con.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void removePlayerFavorites(DataBasePool pool, int telepad, UUID playerUUID) {
+        String querry = "DELETE FROM telefavorites WHERE telefavorites.id = ? AND telefavorites.player = ?;";
+        try {
+            Connection con = pool.getConnection();
+            PreparedStatement sel = con.prepareStatement(querry);
+            sel.setObject(1, telepad);
+            sel.setObject(2, playerUUID);
+            sel.executeUpdate();
+            sel.close();
+            con.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static boolean getPlayerFavorite(DataBasePool pool,UUID player, int id) {
+        String querry = "SELECT telefavorites.id FROM `telefavorites` WHERE `telefavorites`.`player` = ? AND `telefavorites`.`id` = ?;";
+
+        try {
+            Connection con = pool.getConnection();
+            PreparedStatement sel = con.prepareStatement(querry);
+            sel.setObject(1, player);
+            sel.setObject(2, id);
+            ResultSet res =  sel.executeQuery();
+            boolean b = res.first();
+            sel.close();
+            con.close();
+            return b;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
+
+

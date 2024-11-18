@@ -1,5 +1,9 @@
 package de.jonas.telepads;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -13,14 +17,17 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+
 import com.destroystokyo.paper.profile.PlayerProfile;
-import java.util.*;
+
 import de.jonas.stuff.Stuff;
 import de.jonas.stuff.interfaced.ClickEvent;
+import de.jonas.stuff.interfaced.RightClickEvent;
 import de.jonas.stuff.utility.ItemBuilder;
 import de.jonas.stuff.utility.PagenationInventory;
 import de.jonas.stuff.utility.UseNextChatInput;
 import de.jonas.telepads.commands.GiveBuildItem;
+import de.jonas.telepads.commands.GivePortableTeleportItem;
 import de.jonas.telepads.gui.PublishGUI;
 import de.jonas.telepads.gui.TelepadGui;
 import net.kyori.adventure.text.Component;
@@ -29,7 +36,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 
 public class Events {
     
-    public static final NamespacedKey teleID= new NamespacedKey("telepads", "telepad_id");
+    public static final NamespacedKey teleID = new NamespacedKey("telepads", "telepad_id");
 
     public static final ClickEvent closeInv = Events::closeInvI;
     public static final ClickEvent cancelEvent = Events::cancelEventI;
@@ -40,6 +47,7 @@ public class Events {
     public static final ClickEvent addPlayerPermission = Events::addPlayerPermissionI;
     public static final ClickEvent publishToEveryone = Events::publishToEveryoneI;
     public static final ClickEvent openTelepadGUI = Events::openTelepadGUII;
+    private static final RightClickEvent fav = Events::favI;
 
     public Events() {
         Stuff.INSTANCE.itemBuilderManager.addClickEvent(closeInv, "telepads:closeinv");
@@ -51,6 +59,7 @@ public class Events {
         Stuff.INSTANCE.itemBuilderManager.addClickEvent(addPlayerPermission, "telepads:add_permittet_player");
         Stuff.INSTANCE.itemBuilderManager.addClickEvent(publishToEveryone, "telepads:publish_to_everyone");
         Stuff.INSTANCE.itemBuilderManager.addClickEvent(openTelepadGUI, "telepads:open_telepad_gui");
+        Stuff.INSTANCE.itemBuilderManager.addRightClickEvent(fav, "telepads:favorite_telepad");
     }
 
     private static void closeInvI(InventoryClickEvent e) {
@@ -174,4 +183,20 @@ public class Events {
         }
     }
 
+    private static void favI(InventoryClickEvent e) {
+        e.setCancelled(true);
+        MiniMessage mm = MiniMessage.miniMessage();
+        DataBasePool db = Telepads.INSTANCE.basePool;
+        if (e.getCurrentItem() == null || e.getCurrentItem().getItemMeta() == null) return;
+        int id = e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(teleID, PersistentDataType.INTEGER);
+        UUID playerUUID = e.getWhoClicked().getUniqueId();
+        if (playerUUID == null) {
+            e.getWhoClicked().closeInventory();
+            e.getWhoClicked().sendMessage(mm.deserialize("Unexpected error (Events.java | favI)"));
+        }
+        if (DataBasePool.getPlayerFavorite(db, playerUUID, id)) {DataBasePool.removePlayerFavorites(db, id, playerUUID);} else {DataBasePool.addPlayerFavorites(db, id, playerUUID);}
+        if (e.getInventory().getHolder() instanceof PagenationInventory pgi) {
+            pgi.reFillPage(GivePortableTeleportItem.getItems((Player) e.getWhoClicked()));
+        }
+    }
 }

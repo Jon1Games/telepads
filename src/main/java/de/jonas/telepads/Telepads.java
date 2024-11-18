@@ -1,6 +1,7 @@
 package de.jonas.telepads;
 
 import java.sql.SQLException;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -28,12 +29,15 @@ public class Telepads extends JavaPlugin{
 
         INSTANCE = this;
 
+        this.saveDefaultConfig();
+
         basePool = new DataBasePool();
         basePool.init();
 
         try {
             basePool.createTableTelepads();
             basePool.createTableTelePermission();
+            basePool.createTableTeleFavorites();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -52,7 +56,7 @@ public class Telepads extends JavaPlugin{
 
         CommandAPI.onEnable();
 
-        setupEconomy();
+        if (!setupEconomy()) getLogger().log(Level.WARNING, "Economy wasnt setupped correctly, have you installed an Eco-plugin? Vault is just an API to work with economy!");
 
     }
 

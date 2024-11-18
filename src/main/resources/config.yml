@@ -1,0 +1,3 @@
+Database: "jdbc:mariadb://0.0.0.0:3306/Database"
+Username: ""
+Password: ""

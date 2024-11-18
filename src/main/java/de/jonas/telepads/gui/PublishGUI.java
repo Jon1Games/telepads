@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
+
 import de.jonas.stuff.utility.ItemBuilder;
 import de.jonas.telepads.DataBasePool;
 import de.jonas.telepads.Telepads;
@@ -38,7 +39,7 @@ public class PublishGUI implements InventoryHolder{
                 new ItemBuilder()
                     .setMaterial(Material.GRAY_STAINED_GLASS_PANE)
                     .setName("")
-                    .whenClicked("telepads:cancelevent")
+                    .whenLeftClicked("telepads:cancelevent")
                     .build()    
             );
         }

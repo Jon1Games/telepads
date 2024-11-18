@@ -1,6 +1,10 @@
 package de.jonas.telepads.gui;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.regex.Pattern;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,6 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
+
 import de.jonas.stuff.Stuff;
 import de.jonas.stuff.interfaced.ClickEvent;
 import de.jonas.stuff.utility.ItemBuilder;
@@ -27,7 +32,6 @@ import de.jonas.telepads.commands.GiveBuildItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import java.util.*;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 
 public class TelepadGui implements InventoryHolder{
@@ -212,8 +216,10 @@ public class TelepadGui implements InventoryHolder{
                     .whenPlaced("telepads:buildTelepad")
                     .build()
             );
-            if (gui.level == 2) Telepads.getEconomy().depositPlayer((OfflinePlayer) e.getWhoClicked(), 200);
-            e.getWhoClicked().sendMessage(mm.deserialize("Dir wurden <green>200 Coins</green> gutgeschrieben."));
+            if (gui.level == 2) {
+                Telepads.getEconomy().depositPlayer((OfflinePlayer) e.getWhoClicked(), 200);
+                e.getWhoClicked().sendMessage(mm.deserialize("Dir wurden <green>200 Coins</green> gutgeschrieben."));
+            }
             e.getWhoClicked().sendMessage(mm.deserialize("<green>Du hast das Telepad erfolgreich augehoben.</green>"));
         } else {
             e.getWhoClicked().sendMessage(mm.deserialize("<red>Du bist nicht der Besitzer dieses Telepads!</red>"));
@@ -230,7 +236,7 @@ public class TelepadGui implements InventoryHolder{
                 String name = DataBasePool.getName(db, a);
                 ItemStack item = new ItemBuilder()
                     .setMaterial(Material.BEACON)
-                    .setName(name)
+                    .setName(Component.text(name))
                     .whenClicked("telepads:select_telepad_destination")
                     .build();
                 ItemMeta meta = item.getItemMeta();
@@ -239,7 +245,9 @@ public class TelepadGui implements InventoryHolder{
                 item.setItemMeta(meta);
                 list.add(item);
             }
-            e.getWhoClicked().openInventory(new PagenationInventory(list).getInventory());
+            e.getWhoClicked().openInventory(
+                new PagenationInventory(list).getInventory()
+                );
         }
     }
 
@@ -248,6 +256,10 @@ public class TelepadGui implements InventoryHolder{
         MiniMessage mm = MiniMessage.miniMessage();
         DataBasePool db = Telepads.INSTANCE.basePool;
         OfflinePlayer p = (OfflinePlayer) e.getWhoClicked();
+        if (Telepads.getEconomy() == null) {
+            e.getWhoClicked().sendMessage("You shoud not get this, kontakt an admin (Line 258, TelepadGUI.java)");  
+            return;
+        }
         if (Telepads.getEconomy().getBalance(p) >= 200d && p instanceof Player player && e.getInventory().getHolder() instanceof TelepadGui tg) {
             DataBasePool.setLevel2(db, tg.id);
             tg.level++;
