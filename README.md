@@ -12,7 +12,7 @@ It provied an interface where it can be:
 ## More features
 
 All the Telepads which are level 2+ can be seen with the command: `/pad` if you habe the permission to see it, from there you can favorite pads and teleport to them.
-For admins the command `/telepad:admin` can be used to vie *all* telepads without minimessage(for more sight into user configuration) formatting and favorite management.
+For admins the command `/telepad:admin` can be used to vie *all* telepads without minimessage(for more sight into user configuration) formatting, favorite management and are able to teleport to them.
 
 ## Config
 
