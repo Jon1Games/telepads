@@ -326,6 +326,26 @@ public class DataBasePool {
         }
     }
 
+    public static List<Integer> getAllTelepads(DataBasePool pool) {
+        String querry = "SELECT * FROM telepads;";
+
+        try {
+            Connection con = pool.getConnection();
+            PreparedStatement sel = con.prepareStatement(querry);
+            ResultSet res = sel.executeQuery();
+            List<Integer> list = new ArrayList<>();
+            for (boolean a = res.first(); a; a = res.next() ) {
+                list.add(res.getInt("id"));
+            }
+            sel.close();
+            con.close();
+            return list;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static List<Integer> getAllTelepadsIFPermissionFavorites(DataBasePool pool, UUID playerUUID) {
         String querry = "SELECT * FROM telepads WHERE (telepads.owner = ? OR telepads.public OR telepads.id IN (SELECT id FROM telepermission WHERE telepermission.player = ?) AND IN (SELECT id FROM telefavorites WHERE telefavorites.player = ?));";
 

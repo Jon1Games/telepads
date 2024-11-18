@@ -8,6 +8,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import de.jonas.telepads.commands.Admin;
 import de.jonas.telepads.commands.GiveBuildItem;
 import de.jonas.telepads.commands.GivePortableTeleportItem;
 import de.jonas.telepads.listener.OpenGui;
@@ -47,6 +48,7 @@ public class Telepads extends JavaPlugin{
         if (!CommandAPI.isLoaded()) CommandAPI.onLoad(new CommandAPIBukkitConfig(this));
         new GiveBuildItem();
         new GivePortableTeleportItem();
+        new Admin();
     }
 
     @Override
