@@ -1,7 +1,7 @@
 
 # Telepads
 
-This plugin adds Telepads which are a 3x3 multistructure. The multiblockstructure builds it self when the telepads item (/telepad:giveBuildItem) is placed.
+This plugin adds Telepads which are a 3x3 multistructure. The multiblockstructure builds it self when the telepads item (`/telepad:giveBuildItem`) is placed.
 It provied an interface where it can be:
 1. pickupped
 2. upgraded (2 Level are available at the time)
@@ -9,9 +9,18 @@ It provied an interface where it can be:
 4. Name edited (minimessage for formatting)
 5. set a custom block for the display
 
+## More features
+
+All the Telepads which are level 2+ can be seen with the command: `/pad` if you habe the permission to see it, from there you can favorite pads and teleport to them.
+For admins the command `/telepad:admin` can be used to vie *all* telepads without minimessage(for more sight into user configuration) formatting and favorite management.
+
 ## Config
 
 In the Config the following thinsg can be configured:
 1. Database (inc. driver path for both mariadb and mysql support)
 
 More config is comming soon at the time a teleport costs 2 coins and is used via vault, names and messages are also hard coded at the time which will change in the future.
+
+## language 
+
+At the moment the messages are hardcoded and onyl are in german, the default language will continue to be german but the messages will be configurable in the future.
