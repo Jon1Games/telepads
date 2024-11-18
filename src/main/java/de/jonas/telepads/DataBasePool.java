@@ -77,11 +77,11 @@ public class DataBasePool {
         String sqlCreate = "CREATE TABLE IF NOT EXISTS telepads (" +
             "id INTEGER AUTO_INCREMENT PRIMARY KEY NOT NULL," +
             "location VARCHAR(64) NOT NULL," +
-            "name VARCHAR(64) NOT NULL," +
+            "name VARCHAR(128) NOT NULL," +
             "owner UUID NOT NULL," +
             "`level` TINYINT NOT NULL," +
             "destinationID INTEGER," +
-            "blockID INTEGER," +
+            "blockID VARCHAR(64)," +
             "public boolean NOT NULL)" +
             "ENGINE = InnoDB;";
 
@@ -744,6 +744,42 @@ public class DataBasePool {
             return false;
         }
     }
+
+    public static void setBlockID(DataBasePool pool,int id, String blockID) {
+        String querry = "UPDATE `telepads` SET `blockID` = ? WHERE `telepads`.`id` = ?;";
+
+        try {
+            Connection con = pool.getConnection();
+            PreparedStatement sel = con.prepareStatement(querry);
+            sel.setObject(1, blockID);
+            sel.setObject(2, id);
+            sel.executeUpdate();
+            sel.close();
+            con.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String getBlockID(DataBasePool pool,int id) {
+        String querry = "SELECT telepads.blockID FROM `telepads` WHERE `telepads`.`id` = ?;";
+
+        try {
+            Connection con = pool.getConnection();
+            PreparedStatement sel = con.prepareStatement(querry);
+            sel.setObject(1, id);
+            ResultSet res =  sel.executeQuery();
+            res.first();
+            String b = res.getString("blockID");
+            sel.close();
+            con.close();
+            return b;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }
 
 

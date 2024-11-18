@@ -3,9 +3,11 @@ package de.jonas.telepads;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.EntityType;
@@ -28,6 +30,7 @@ import de.jonas.stuff.utility.PagenationInventory;
 import de.jonas.stuff.utility.UseNextChatInput;
 import de.jonas.telepads.commands.GiveBuildItem;
 import de.jonas.telepads.commands.GivePortableTeleportItem;
+import de.jonas.telepads.gui.CustomizeGUI;
 import de.jonas.telepads.gui.PublishGUI;
 import de.jonas.telepads.gui.TelepadGui;
 import net.kyori.adventure.text.Component;
@@ -42,11 +45,13 @@ public class Events {
     public static final ClickEvent cancelEvent = Events::cancelEventI;
     public static final ClickEvent selectTelepadLocation = Events::selectTelepadLocationI;
     public static final ClickEvent openPublishGUI = Events::openPublishGUII;
+    public static final ClickEvent openCustomizer = Events::openCustomizerI;
     public static final ClickEvent listPermittetPlayers = Events::listPermittetPlayersI;
     public static final ClickEvent removePlayerPermission = Events::removePlayerPermissionI;
     public static final ClickEvent addPlayerPermission = Events::addPlayerPermissionI;
     public static final ClickEvent publishToEveryone = Events::publishToEveryoneI;
     public static final ClickEvent openTelepadGUI = Events::openTelepadGUII;
+    public static final ClickEvent changeBlock = Events::changeBlockI;
     private static final RightClickEvent fav = Events::favI;
 
     public Events() {
@@ -59,6 +64,8 @@ public class Events {
         Stuff.INSTANCE.itemBuilderManager.addClickEvent(addPlayerPermission, "telepads:add_permittet_player");
         Stuff.INSTANCE.itemBuilderManager.addClickEvent(publishToEveryone, "telepads:publish_to_everyone");
         Stuff.INSTANCE.itemBuilderManager.addClickEvent(openTelepadGUI, "telepads:open_telepad_gui");
+        Stuff.INSTANCE.itemBuilderManager.addClickEvent(openCustomizer, "telepads:open_customizer_gui");
+        Stuff.INSTANCE.itemBuilderManager.addClickEvent(changeBlock, "telepads:click_block");
         Stuff.INSTANCE.itemBuilderManager.addRightClickEvent(fav, "telepads:favorite_telepad");
     }
 
@@ -101,6 +108,13 @@ public class Events {
         if (e.getInventory().getHolder() instanceof TelepadGui tg) {
             e.setCancelled(true);
             e.getWhoClicked().openInventory(new PublishGUI(tg.id, tg.level).getInventory());
+        }
+    }
+
+    public static void openCustomizerI(InventoryClickEvent e) {
+        if (e.getInventory().getHolder() instanceof TelepadGui tg) {
+            e.setCancelled(true);
+            e.getWhoClicked().openInventory(new CustomizeGUI(tg.id, tg.level).getInventory());
         }
     }
 
@@ -197,6 +211,38 @@ public class Events {
         if (DataBasePool.getPlayerFavorite(db, playerUUID, id)) {DataBasePool.removePlayerFavorites(db, id, playerUUID);} else {DataBasePool.addPlayerFavorites(db, id, playerUUID);}
         if (e.getInventory().getHolder() instanceof PagenationInventory pgi) {
             pgi.reFillPage(GivePortableTeleportItem.getItems((Player) e.getWhoClicked()));
+        }
+    }
+
+    private static void changeBlockI(InventoryClickEvent e) {
+        MiniMessage mm = MiniMessage.miniMessage();
+        Telepads telepads = Telepads.INSTANCE;
+        DataBasePool db = telepads.basePool;
+        e.getWhoClicked().closeInventory();
+        if (e.getInventory().getHolder() instanceof CustomizeGUI tg) {
+            new UseNextChatInput((Player) e.getWhoClicked())
+                .sendMessage("Welcher soll dein neuer Anzeige Block sein?.<br>Schreibe \"exit\" oder \"abbrechen\" um den Vorgang abzubrechen.")
+                .setChatEvent((player, message) -> {
+                    if (message.equalsIgnoreCase("exit") || message.equalsIgnoreCase("abbrechen")) {
+                        player.sendMessage("Abgebrochen");
+                        return;
+                    }
+
+                    Pattern ptm = Pattern.compile("[a-zA-Z0-9_ ]{1,64}");   
+                    if(ptm.matcher(message).matches()) {
+                        Material mat = Material.matchMaterial(message.toUpperCase());
+                        if (mat == null) {
+                            player.sendMessage(mm.deserialize("<red>Dieser Block wurde nicht gefunden.</red>"));
+                            return;
+                        }
+                        DataBasePool.setBlockID(db, tg.id, message);
+                        player.sendMessage(mm.deserialize("Dein Telepad Block wurde zu \"<green><name></green>\" geändert.",
+                        Placeholder.component("name", Component.text(message))));
+                    } else {
+                        player.sendMessage(mm.deserialize("<red>Dieser Block wurde nicht gefunden.</red>"));
+                    }
+                })
+            .capture();
         }
     }
 }

@@ -27,6 +27,7 @@ import de.jonas.telepads.particle.ParticleRunner;
 import de.jonas.telepads.particle.effects.SpiralEffect;
 import de.jonas.telepads.particle.spawner.BuilderParticle;
 import dev.jorel.commandapi.CommandAPICommand;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 public class GivePortableTeleportItem {
@@ -91,12 +92,24 @@ public class GivePortableTeleportItem {
         if (pads != null) {
             for (int a : pads) {
                 String name = DataBasePool.getName(db, a);
+                String blockID = DataBasePool.getBlockID(db, a);
+                boolean isFavorite = DataBasePool.getPlayerFavorite(db, player.getUniqueId(), a);
+                String fav;
+                if (isFavorite) {
+                    fav = "Favorite";
+                } else {fav="";}
+                Material block;
+                if (blockID == null) {
+                    block = Material.BEACON;
+                } else {block = Material.getMaterial(blockID.toUpperCase());}
+
                 ItemStack item = new ItemBuilder()
-                    .setMaterial(Material.BEACON)
-                    .setName(name)
+                    .setMaterial(block)
+                    .setName(Component.text(name))
                     .whenLeftClicked("telepads:teleport_per_portable_gui")
                     .whenRightClicked("telepads:favorite_telepad")
-                    .build();
+                    .addLoreLine(fav)
+                .build();
                 ItemMeta meta = item.getItemMeta();
                 meta.getPersistentDataContainer().set(Events.teleID, PersistentDataType.INTEGER, a);
                 item.setItemMeta(meta);

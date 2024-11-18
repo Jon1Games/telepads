@@ -96,9 +96,9 @@ public class TelepadGui implements InventoryHolder{
         telepadGui.setItem(4, 
             new ItemBuilder()
             .setMaterial(Material.NAME_TAG)
-            .setName(name)
-            .addLoreLine("Klicken Namen ändern.")
-            .whenClicked("telepads:click_change_name")
+            .setName("Anpassungen")
+            .addLoreLine("Name und Anzeige Block")
+            .whenClicked("telepads:open_customizer_gui")
             .build()
         );
 
@@ -154,30 +154,32 @@ public class TelepadGui implements InventoryHolder{
 
     }
 
+    
     private static void changeNameI(InventoryClickEvent e) {
         MiniMessage mm = MiniMessage.miniMessage();
         Telepads telepads = Telepads.INSTANCE;
         DataBasePool db = telepads.basePool;
         e.getWhoClicked().closeInventory();
-        TelepadGui gui = (TelepadGui) e.getInventory().getHolder(false);
-        new UseNextChatInput((Player) e.getWhoClicked())
-            .sendMessage("Wie möchtest du dein Telepad nennen?.<br>Schreibe \"exit\" oder \"abbrechen\" um den Vorgang abzubrechen.")
-            .setChatEvent((player, message) -> {
-                if (message.equalsIgnoreCase("exit") || message.equalsIgnoreCase("abbrechen")) {
-                    player.sendMessage("Abgebrochen");
-                    return;
-                }
+        if (e.getInventory().getHolder() instanceof CustomizeGUI tg) {
+            new UseNextChatInput((Player) e.getWhoClicked())
+                .sendMessage("Wie möchtest du dein Telepad nennen?.<br>Schreibe \"exit\" oder \"abbrechen\" um den Vorgang abzubrechen.")
+                .setChatEvent((player, message) -> {
+                    if (message.equalsIgnoreCase("exit") || message.equalsIgnoreCase("abbrechen")) {
+                        player.sendMessage("Abgebrochen");
+                        return;
+                    }
 
-                Pattern ptm = Pattern.compile("[a-zA-Z0-9_ ]{3,32}");
-                if(ptm.matcher(message).matches()) {
-                    DataBasePool.setName(db, gui.id, message);
-                    player.sendMessage(mm.deserialize("Dein Telepad wurde \"<green><name></green>\" genannt.",
-                    Placeholder.component("name", Component.text(message))));
-                } else {
-                    player.sendMessage(mm.deserialize("<red>Dieser Name ist ungültig <br>Der Name darf nur die Zeichen [a-zA-Z0-9_ ] verwenden <br> und muss zwischen 3 und 32 Zeichen lang sein.</red>"));
-                }
-            })
-            .capture();
+                    Pattern ptm = Pattern.compile("[a-zA-Z0-9_ </>]{3,128}");
+                    if(ptm.matcher(message).matches()) {
+                        DataBasePool.setName(db, tg.id, message);
+                        player.sendMessage(mm.deserialize("Dein Telepad wurde \"<green><name></green>\" genannt.",
+                        Placeholder.component("name", Component.text(message))));
+                    } else {
+                        player.sendMessage(mm.deserialize("<red>Dieser Name ist ungültig <br>Der Name darf nur die Zeichen [a-zA-Z0-9_ ] verwenden <br> und muss zwischen 3 und 32 Zeichen lang sein.</red>"));
+                    }
+                })
+                .capture();
+        }
     }
 
     private static void pickUpI(InventoryClickEvent e) {
@@ -234,8 +236,13 @@ public class TelepadGui implements InventoryHolder{
             List<ItemStack> list = new ArrayList<>();
             for (int a : pads) {
                 String name = DataBasePool.getName(db, a);
+                String blockID = DataBasePool.getBlockID(db, a);
+                Material block;
+                if (blockID == null) {
+                    block = Material.BEACON;
+                } else {block = Material.getMaterial(blockID.toUpperCase());}
                 ItemStack item = new ItemBuilder()
-                    .setMaterial(Material.BEACON)
+                    .setMaterial(block)
                     .setName(Component.text(name))
                     .whenClicked("telepads:select_telepad_destination")
                     .build();
