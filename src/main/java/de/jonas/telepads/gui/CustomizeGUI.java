@@ -35,7 +35,7 @@ public class CustomizeGUI implements InventoryHolder{
                 new ItemBuilder()
                     .setMaterial(Material.GRAY_STAINED_GLASS_PANE)
                     .setName("")
-                    .whenLeftClicked("telepads:cancelevent")
+                    .whenClicked("telepads:cancelevent")
                     .build()    
             );
         }

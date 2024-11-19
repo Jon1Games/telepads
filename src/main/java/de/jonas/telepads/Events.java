@@ -195,6 +195,9 @@ public class Events {
         if (e.getClickedInventory().getHolder() instanceof PublishGUI pg) {
             e.getWhoClicked().openInventory(new TelepadGui((Player) e.getWhoClicked(), pg.id).getInventory());
         }
+        if (e.getClickedInventory().getHolder() instanceof CustomizeGUI cg) {
+            e.getWhoClicked().openInventory(new TelepadGui((Player) e.getWhoClicked(), cg.id).getInventory());
+        }
     }
 
     private static void favI(InventoryClickEvent e) {
