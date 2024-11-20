@@ -1,13 +1,47 @@
+# Database connection, MariaDB and MYSQL supported, no sqllite
 Database: "jdbc:mariadb://0.0.0.0:3306/Database"
 Username: ""
 Password: ""
 
+AdminPermission: telepads.admin
+
+# Command settings
+PortableTelepad:
+  permission: "telepads.commands.portabletelepad"
+  aliases:
+    - pad
+GiveBuildItem:
+  permission: "telepads.commands.givetlelepaditem"
+  aliases:
+    - giveteleitem
+Admin:
+  permission: "telepads.commands.admin"
+  aliases:
+    - teleadmin
+
+ Messages
 # if block is anvalid the default block is used
 Messages:
   noPerms: "<red>Du hast keine Berechtigungen auf dieses Telepad.</red>"
   noMoney: "<red>Du hast nicht genug Geld.</red>"
   # Placeholder: coming soon
   teleport: "Dir wurden .... zum Teleport abgezogen."
+  dbError: <red>Es gab einen Fehler beim erstellen des Telepads in der Datenbank, bitte kontactiere einen Administrator!</red>"
+  createTelepad: "<green>Dein Telepad wurde erstellt.</green>"
+  # Placeholder: <name>
+  renameTelepad: "Dein Telepad wurde \"<name>\" genannt."
+  fullInventory: "<red>Dein Inventar ist voll, bitte lerre es um das Telepad aufzusammeln</red>"
+  pickup: "<green>Du hast das Telepad erfolgreich augehoben.</green>"
+  levelup: "Dein Telepad wurde aufgewertet."
+  # This ussually happens when a telepad is right klicked which is not in the databse (example: DB reset, )
+  errorSupport: "Ein fehler ist aufgetreten, bitte melde dich im support."
+  # Placeholder: <desti>
+  setDestination: "Du hast \"<desti>\" erfolgreich als Ziel gesetzt."
+  # Placeholder: <name>
+  addPermission: "Der Spieler \"<green><name></green>\" wurde für dieses Telepad gesetzt."
+  removePermission: ""
+  blocknotFound: "<red>Dieser Block wurde nicht gefunden.</red>"
+  changesBlock: "Dein Telepad Block wurde zu \"<green><name></green>\" geändert."
 CommonPage:
   continue: ""
   back: ""
@@ -25,11 +59,22 @@ TelepadGUI:
     blocktype:
       name: ""
       block: ""
+      question: "Welcher soll dein neuer Anzeige Block sein?.<br>Schreibe \"exit\" oder \"abbrechen\" um den Vorgang abzubrechen."
+      exitWords:
+        - "exit"
+        - "abbrechen"
     telepadname:
       name: ""
       block: ""
+      question: ""Wie möchtest du dein Telepad nennen?.<br>Schreibe \"exit\" oder \"abbrechen\" um den Vorgang abzubrechen."
+      exitWords:
+        - "exit"
+        - "abbrechen"
   destination:
     name: ""
+    statelowLevel: "Telepad Level 2 benötigt."
+    statePrivate: "Privat"
+    statePubic: "Öffendlich"
     block: ""
   publicity:
     name: ""
@@ -40,8 +85,14 @@ TelepadGUI:
     add:
       name: ""
       block: ""
+      question: "Schreibe den Spielernamne den du hinzufügen willst in den Chat.<br>Schreibe \"exit\" zum abzubrechen."
+      exitWords:
+        - exit
+        - abbrechen
     remove:
       name: ""
       block: ""
+      removePlayer:
+        name: "Klicke um zu entfernen."
   
   
