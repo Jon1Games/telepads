@@ -1,3 +1,47 @@
 Database: "jdbc:mariadb://0.0.0.0:3306/Database"
 Username: ""
 Password: ""
+
+# if block is anvalid the default block is used
+Messages:
+  noPerms: "<red>Du hast keine Berechtigungen auf dieses Telepad.</red>"
+  noMoney: "<red>Du hast nicht genug Geld.</red>"
+  # Placeholder: coming soon
+  teleport: "Dir wurden .... zum Teleport abgezogen."
+CommonPage:
+  continue: ""
+  back: ""
+  close: ""
+TelepadGUI:
+  pickup:
+    name: ""
+    block: ""
+  levelup:
+    name: ""
+    block: "" 
+  customizer:
+    name: ""
+    block: ""
+    blocktype:
+      name: ""
+      block: ""
+    telepadname:
+      name: ""
+      block: ""
+  destination:
+    name: ""
+    block: ""
+  publicity:
+    name: ""
+    block: ""
+    list:
+      name: ""
+      block: ""
+    add:
+      name: ""
+      block: ""
+    remove:
+      name: ""
+      block: ""
+  
+  
