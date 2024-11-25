@@ -7,6 +7,7 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -33,14 +34,17 @@ public class Admin {
     private static final ClickEvent adminTeleport = Admin::adminTeleportI;
 
     public Admin() {
+        Telepads telepads = Telepads.INSTANCE;
+        FileConfiguration conf = telepads.getConfig();
+        MiniMessage mm = MiniMessage.miniMessage();
 
         Stuff.INSTANCE.itemBuilderManager.addClickEvent(adminTeleport, "telepads:teleport_per_portable_gui");
 
-        new CommandAPICommand("telepad:admin")
-        .withPermission("telepads.admin")
-        .executesPlayer((player, arg) -> {
-            player.openInventory(new PagenationInventory(getItems()).getInventory());
-        })
+        new CommandAPICommand("telepads:admin")
+            .withPermission(conf.getString("AdminPermission"))
+            .executesPlayer((player, arg) -> {
+                player.openInventory(new PagenationInventory(getItems()).getInventory());
+            })
         .register();
     }
 

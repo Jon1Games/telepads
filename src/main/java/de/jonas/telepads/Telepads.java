@@ -11,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import de.jonas.telepads.commands.Admin;
 import de.jonas.telepads.commands.GiveBuildItem;
 import de.jonas.telepads.commands.GivePortableTeleportItem;
+import de.jonas.telepads.commands.ReloadCommand;
 import de.jonas.telepads.listener.OpenGui;
 import de.jonas.telepads.listener.PreventChangePad;
 import de.jonas.telepads.listener.UseTelepad;
@@ -46,6 +47,7 @@ public class Telepads extends JavaPlugin{
         events = new Events();
 
         if (!CommandAPI.isLoaded()) CommandAPI.onLoad(new CommandAPIBukkitConfig(this));
+        new ReloadCommand();   
         new GiveBuildItem();
         new GivePortableTeleportItem();
         new Admin();

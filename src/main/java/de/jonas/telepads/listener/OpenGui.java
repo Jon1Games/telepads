@@ -1,13 +1,16 @@
 package de.jonas.telepads.listener;
 
+import java.util.logging.Level;
+
 import org.bukkit.block.Beacon;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import java.util.logging.*;
+
 import de.jonas.telepads.DataBasePool;
 import de.jonas.telepads.Telepads;
 import de.jonas.telepads.commands.GiveBuildItem;
@@ -18,6 +21,8 @@ public class OpenGui implements Listener {
 
     @EventHandler
     public void onTelepadClick(PlayerInteractEvent e) {
+        Telepads telepads = Telepads.INSTANCE;
+        FileConfiguration conf = telepads.getConfig();
         if (e.getClickedBlock() == null || e.getClickedBlock().getState() == null) return;
         if (!(e.getClickedBlock().getState() instanceof Beacon b)) return;
         PersistentDataContainer container = b.getPersistentDataContainer();
@@ -29,7 +34,7 @@ public class OpenGui implements Listener {
         int id = b.getPersistentDataContainer().get(GiveBuildItem.telepadNum, PersistentDataType.INTEGER);
         if (!(p.hasPermission("telepads.admin") || DataBasePool.playerIsOwner(db, 
             id, p.getUniqueId()))) { 
-                p.sendMessage(mm.deserialize("<red>Dier gehört dieses Telepad nicht!</red>"));
+                p.sendMessage(mm.deserialize(conf.getString("Messages.noPerms")));
                 return;
             }
 

@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Beacon;
 import org.bukkit.block.data.Orientable;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -21,6 +22,7 @@ public class GiveBuildItem {
 
     MiniMessage mm = MiniMessage.miniMessage();
     Telepads telepads = Telepads.INSTANCE;
+    FileConfiguration conf = telepads.getConfig();
     DataBasePool db = telepads.basePool;
 
     public static final NamespacedKey telepadNum = new NamespacedKey("telepads", "identification_number");
@@ -50,7 +52,7 @@ public class GiveBuildItem {
             ) {
                 int id = DataBasePool.setNewTelepad(db, pv.getPlayer().getUniqueId(),  pv.getBlock().getLocation());
                 if (id == -1) {
-                    pv.getPlayer().sendMessage(mm.deserialize("<red>Es gab einen Fehler beim erstellen des Telepads in der Datenbank, bitte kontactiere einen Administrator!</red>"));
+                    pv.getPlayer().sendMessage(mm.deserialize("Messages.dbError"));
                     return;
                 }
                 b.getPersistentDataContainer().set(telepadNum, PersistentDataType.INTEGER, id);
@@ -66,7 +68,7 @@ public class GiveBuildItem {
                 orientBlock(l5, Axis.X);
                 loc.getWorld().setType(l7, Material.STRIPPED_WARPED_HYPHAE);
                 orientBlock(l7, Axis.Z);
-                pv.getPlayer().sendMessage(mm.deserialize("<green>Dein Telepad wurde erstellt.</green>"));
+                pv.getPlayer().sendMessage(mm.deserialize("Messages.createTelepad"));
         } else {
             pv.setCancelled(true);
         }
@@ -76,16 +78,17 @@ public class GiveBuildItem {
 
         Stuff.INSTANCE.itemBuilderManager.addPlaceEvent(buildTelepad, "telepads:buildTelepad");
 
-        new CommandAPICommand("telepad:giveBuildItem")
-        .withPermission("telepads.givebuilditem")
-        .executesPlayer((player, arg) -> {
-            player.getInventory().addItem(new ItemBuilder()
-                .setMaterial(Material.BEACON)
-                .setName("Telepad")
-                .whenPlaced("telepads:buildTelepad")
-                .build()
-            );
-        })
+        new CommandAPICommand("telepads:giveBuildItem")
+            .withPermission(conf.getString("GiveBuildItem.permission"))
+            .withAliases(conf.getStringList("GiveBuildItem.aliases").toArray(num -> new String[num]))
+            .executesPlayer((player, arg) -> {
+                player.getInventory().addItem(new ItemBuilder()
+                    .setMaterial(Material.BEACON)
+                    .setName("Telepad")
+                    .whenPlaced("telepads:buildTelepad")
+                    .build()
+                );
+            })
         .register();
     }
 

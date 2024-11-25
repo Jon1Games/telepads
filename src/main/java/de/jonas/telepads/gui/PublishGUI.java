@@ -2,6 +2,7 @@ package de.jonas.telepads.gui;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +13,8 @@ import de.jonas.telepads.Telepads;
 import net.kyori.adventure.text.Component;
 
 public class PublishGUI implements InventoryHolder{
+    Telepads telepads = Telepads.INSTANCE;
+    FileConfiguration conf = telepads.getConfig();
 
     Inventory inv;
     public int id, level;
@@ -24,11 +27,11 @@ public class PublishGUI implements InventoryHolder{
         this.level = level;
         this.publish = DataBasePool.getPublic(db, id);
         if (level == 1) {
-            pl = "Telepad Level 2 benötigt";
+            pl = conf.getString("Messages.telepadLevelRequired");
         } else if (publish) {
-            pl = "Öffentlich";
+            pl = conf.getString("CommonPage.public");
         } else {
-            pl = "Privat";
+            pl = conf.getString("CommonPage.private");
         }
 
         inv = Bukkit.createInventory(this, (9*5), Component.text(""));
@@ -39,15 +42,15 @@ public class PublishGUI implements InventoryHolder{
                 new ItemBuilder()
                     .setMaterial(Material.GRAY_STAINED_GLASS_PANE)
                     .setName("")
-                    .whenLeftClicked("telepads:cancelevent")
+                    .whenClicked("telepads:cancelevent")
                     .build()    
             );
         }
 
         inv.setItem(11, 
             new ItemBuilder()
-                .setMaterial(Material.ENDER_EYE)
-                .setName("Sichtbarkeit")
+                .setMaterial(Material.getMaterial(conf.getString("TelepadGUI.publicity.block").toUpperCase()))
+                .setName(conf.getString("TelepadGUI.publicity.name"))
                 .addLoreLine(pl)
                 .whenClicked("telepads:publish_to_everyone")
                 .build()
@@ -55,17 +58,16 @@ public class PublishGUI implements InventoryHolder{
 
         inv.setItem(13,
             new ItemBuilder()
-            .setMaterial(Material.PLAYER_HEAD)
-                .setName("Spieler hinzufügen")
+                .setMaterial(Material.getMaterial(conf.getString("TelepadGUI.publicity.add.block").toUpperCase()))
+                .setName(conf.getString("TelepadGUI.publicity.add.name"))
                 .whenClicked("telepads:add_permittet_player")
                 .build()
         );
 
         inv.setItem(15, 
             new ItemBuilder()
-                .setMaterial(Material.PAPER)
-                .setName("Spieler Liste")
-                .addLoreLine("Eine Liste mit allen Spielern")
+            .setMaterial(Material.getMaterial(conf.getString("TelepadGUI.publicity.list.block").toUpperCase()))
+            .setName(conf.getString("TelepadGUI.publicity.list.name"))
                 .whenClicked("telepads:list_permittet_player")
                 .build()
         );
@@ -73,7 +75,7 @@ public class PublishGUI implements InventoryHolder{
         inv.setItem(31, 
             new ItemBuilder()
                 .setMaterial(Material.BARRIER)
-                .setName("Zurück")
+                .setName(conf.getString("CommonPage.back"))
                 .whenClicked("telepads:open_telepad_gui")
                 .build()
         );
@@ -82,14 +84,14 @@ public class PublishGUI implements InventoryHolder{
 
     public void executePublishUpdate() {
         if (publish) {
-            pl = "Öffentlich";
+            pl = conf.getString("CommonPage.public");
         } else {
-            pl = "Privat";
+            pl = conf.getString("CommonPage.private");
         }
         inv.setItem(11, 
             new ItemBuilder()
-                .setMaterial(Material.ENDER_EYE)
-                .setName("Sichtbarkeit")
+                .setMaterial(Material.getMaterial(conf.getString("TelepadGUI.publicity.block").toUpperCase()))
+                .setName(conf.getString("TelepadGUI.publicity.name"))
                 .addLoreLine(pl)
                 .whenClicked("telepads:publish_to_everyone")
                 .build()

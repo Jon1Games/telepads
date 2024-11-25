@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Particle;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -30,38 +31,46 @@ import dev.jorel.commandapi.CommandAPICommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 
 public class GivePortableTeleportItem {
 
     private static final LeftClickEvent teleport = GivePortableTeleportItem::teleportI;
 
     public GivePortableTeleportItem() {
+        Telepads telepads = Telepads.INSTANCE;
+        FileConfiguration conf = telepads.getConfig();
 
         Stuff.INSTANCE.itemBuilderManager.addleftClickEvent(teleport, "telepads:teleport_per_portable_gui");
 
-        new CommandAPICommand("telepad:openTeleportGUI")
-        .withAliases("pad")
-        .withPermission("telepads.giveportbleitem")
-        .executesPlayer((player, arg) -> {
-            player.openInventory(new PagenationInventory(getItems(player)).getInventory());
-        })
+        new CommandAPICommand("telepads:openTeleportGUI")
+            .withAliases(conf.getStringList("PortableTelepad.aliases").toArray(num -> new String[num]))
+            .withPermission("PortableTelepad.permission")
+            .executesPlayer((player, arg) -> {
+                player.openInventory(new PagenationInventory(getItems(player)).getInventory());
+            })
         .register();
     }
 
     private static void teleportI(InventoryClickEvent e) {
         MiniMessage mm = MiniMessage.miniMessage();
+        Telepads telepads = Telepads.INSTANCE;
+        FileConfiguration conf = telepads.getConfig();
         DataBasePool db = Telepads.INSTANCE.basePool;
         e.setCancelled(true);
         e.getWhoClicked().closeInventory();
-        if (Telepads.getEconomy().getBalance((OfflinePlayer) e.getWhoClicked()) <= 2d) {
-            e.getWhoClicked().sendMessage("<red>Du hast nicht genügen Coins um dich zu Teleportieren.</red>");
+        double cost = conf.getDouble("UseTelepadCost");
+        if (Telepads.getEconomy().getBalance((OfflinePlayer) e.getWhoClicked()) <= cost) {
+            e.getWhoClicked().sendMessage(mm.deserialize("Messages.noMoney"));
             return;
         }
         if (e.getCurrentItem() == null || e.getCurrentItem().getItemMeta() == null) return;
         int id = e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(Events.teleID, PersistentDataType.INTEGER);
         Location l = DataBasePool.getlocation(db, id).add(0.5,1,0.5);
-        Telepads.getEconomy().withdrawPlayer((OfflinePlayer) e.getWhoClicked(), 2d);
-        e.getWhoClicked().sendMessage(mm.deserialize("Dir wurden <green>2 Coins</green> zum Teleport abgezogen."));
+        Telepads.getEconomy().withdrawPlayer((OfflinePlayer) e.getWhoClicked(), cost);
+        e.getWhoClicked().sendMessage(mm.deserialize("Messages.teleport",
+            Placeholder.component("cost", Component.text(cost))
+        ));
         e.getWhoClicked().teleport(l);
         new ParticleRunner(
                     Telepads.INSTANCE,
@@ -81,6 +90,8 @@ public class GivePortableTeleportItem {
 
     public static List<ItemStack> getItems(Player player) {
         MiniMessage mm = MiniMessage.miniMessage();
+        Telepads telepads = Telepads.INSTANCE;
+        FileConfiguration conf = telepads.getConfig();
         DataBasePool db = Telepads.INSTANCE.basePool;
         List<Integer> pads = DataBasePool.getAllTelepadsIFPermissionAndLevel2PadFavorites(db, player.getUniqueId());
         List<Integer> padss = DataBasePool.getAllTelepadsIFPermissionAndLevel2PadNotFavorites(db, player.getUniqueId());
@@ -98,8 +109,8 @@ public class GivePortableTeleportItem {
                 boolean isFavorite = DataBasePool.getPlayerFavorite(db, player.getUniqueId(), a);
                 Component fav;
                 if (isFavorite) {
-                    fav = mm.deserialize("<yellow>Favorit</yellow>").decoration(TextDecoration.ITALIC, false);
-                } else {fav = mm.deserialize("");}
+                    fav = mm.deserialize(conf.getString("PortableTelepad.FavoriteMarker")).decoration(TextDecoration.ITALIC, false);
+                } else {fav = Component.text("");}
                 Material block;
                 if (blockID == null) {
                     block = Material.BEACON;
@@ -110,8 +121,8 @@ public class GivePortableTeleportItem {
                     .setName(mm.deserialize(name).decoration(TextDecoration.ITALIC, false))
                     .whenLeftClicked("telepads:teleport_per_portable_gui")
                     .whenRightClicked("telepads:favorite_telepad")
-                    .addLoreLine(mm.deserialize("<white>Links Klick: Teleport</white>").decoration(TextDecoration.ITALIC, false))
-                    .addLoreLine(mm.deserialize("<white>Rechts Klick: Favorisieren</white>").decoration(TextDecoration.ITALIC, false))
+                    .addLoreLine(mm.deserialize(conf.getString("PortableTelepad.LeftClickTELEPRT")).decoration(TextDecoration.ITALIC, false))
+                    .addLoreLine(mm.deserialize(conf.getString("PortableTelepad.RightClickFAVOTITE")).decoration(TextDecoration.ITALIC, false))
                     .addLoreLine(fav)
 
                 .build();

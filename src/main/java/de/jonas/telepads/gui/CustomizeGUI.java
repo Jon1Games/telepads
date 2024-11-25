@@ -2,6 +2,7 @@ package de.jonas.telepads.gui;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +13,8 @@ import de.jonas.telepads.Telepads;
 import net.kyori.adventure.text.Component;
 
 public class CustomizeGUI implements InventoryHolder{
+    Telepads telepads = Telepads.INSTANCE;
+    FileConfiguration conf = telepads.getConfig();
 
     Inventory inv;
     public int id, blockID;
@@ -21,9 +24,7 @@ public class CustomizeGUI implements InventoryHolder{
     String name = DataBasePool.getName(db, id);
     String blockID = DataBasePool.getBlockID(db, id);
     Material block;
-    if (blockID == null) {
-        block = Material.BEACON;
-    } else {block = Material.getMaterial(blockID.toUpperCase());}
+    if (blockID == null) {block = Material.BEACON;} else {block = Material.getMaterial(blockID.toUpperCase());}
     
     this.id = id;
 
@@ -42,9 +43,8 @@ public class CustomizeGUI implements InventoryHolder{
 
         inv.setItem(12, 
             new ItemBuilder()
-                .setMaterial(Material.NAME_TAG)
-                .setName(name)
-                .addLoreLine("Klicken Namen ändern.")
+                .setMaterial(Material.getMaterial(conf.getString("TelepadGUI.customizer.telepadname.block").toUpperCase()))
+                .setName(conf.getString("TelepadGUI.customizer.telepadname.name"))
                 .whenClicked("telepads:click_change_name")
             .build()
         );
@@ -52,7 +52,7 @@ public class CustomizeGUI implements InventoryHolder{
         inv.setItem(14, 
             new ItemBuilder()
                 .setMaterial(block)
-                .setName("Anzeige Block")
+                .setName(conf.getString("TelepadGUI.customizer.blocktype.name"))
                 .whenClicked("telepads:click_block")
             .build()
         );
@@ -60,7 +60,7 @@ public class CustomizeGUI implements InventoryHolder{
         inv.setItem(31, 
             new ItemBuilder()
                 .setMaterial(Material.BARRIER)
-                .setName("Zurück")
+                .setName(conf.getString("CommonPage.back"))
                 .whenClicked("telepads:open_telepad_gui")
                 .build()
         );
